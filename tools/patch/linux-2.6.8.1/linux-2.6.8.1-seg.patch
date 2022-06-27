@@ -1,0 +1,95 @@
+--- linux-2.6.8.1.org/arch/i386/kernel/process.c	2004-08-14 18:54:46.000000000 +0800
++++ linux-2.6.8.1/arch/i386/kernel/process.c	2009-06-01 11:57:18.000000000 +0800
+@@ -527,8 +527,8 @@
+ 	 * Save away %fs and %gs. No need to save %es and %ds, as
+ 	 * those are always kernel segments while inside the kernel.
+ 	 */
+-	asm volatile("movl %%fs,%0":"=m" (*(int *)&prev->fs));
+-	asm volatile("movl %%gs,%0":"=m" (*(int *)&prev->gs));
++	asm volatile("mov %%fs,%0":"=m" (*(int *)&prev->fs));
++	asm volatile("mov %%gs,%0":"=m" (*(int *)&prev->gs));
+ 
+ 	/*
+ 	 * Restore %fs and %gs if needed.
+--- linux-2.6.8.1.org/arch/i386/kernel/vm86.c	2004-08-14 18:54:49.000000000 +0800
++++ linux-2.6.8.1/arch/i386/kernel/vm86.c	2009-06-01 11:58:32.000000000 +0800
+@@ -300,8 +300,8 @@
+  */
+ 	info->regs32->eax = 0;
+ 	tsk->thread.saved_esp0 = tsk->thread.esp0;
+-	asm volatile("movl %%fs,%0":"=m" (tsk->thread.saved_fs));
+-	asm volatile("movl %%gs,%0":"=m" (tsk->thread.saved_gs));
++	asm volatile("mov %%fs,%0":"=m" (tsk->thread.saved_fs));
++	asm volatile("mov %%gs,%0":"=m" (tsk->thread.saved_gs));
+ 
+ 	tss = init_tss + get_cpu();
+ 	tsk->thread.esp0 = (unsigned long) &info->VM86_TSS_ESP0;
+--- linux-2.6.8.1.org/arch/x86_64/kernel/process.c	2004-08-14 18:55:33.000000000 +0800
++++ linux-2.6.8.1/arch/x86_64/kernel/process.c	2009-06-01 12:02:03.000000000 +0800
+@@ -360,10 +360,10 @@
+ 	p->thread.fs = me->thread.fs;
+ 	p->thread.gs = me->thread.gs;
+ 
+-	asm("movl %%gs,%0" : "=m" (p->thread.gsindex));
+-	asm("movl %%fs,%0" : "=m" (p->thread.fsindex));
+-	asm("movl %%es,%0" : "=m" (p->thread.es));
+-	asm("movl %%ds,%0" : "=m" (p->thread.ds));
++	asm("mov %%gs,%0" : "=m" (p->thread.gsindex));
++	asm("mov %%fs,%0" : "=m" (p->thread.fsindex));
++	asm("mov %%es,%0" : "=m" (p->thread.es));
++	asm("mov %%ds,%0" : "=m" (p->thread.ds));
+ 
+ 	if (unlikely(me->thread.io_bitmap_ptr != NULL)) { 
+ 		p->thread.io_bitmap_ptr = kmalloc(IO_BITMAP_BYTES, GFP_KERNEL);
+@@ -422,11 +422,11 @@
+ 	 * Switch DS and ES.
+ 	 * This won't pick up thread selector changes, but I guess that is ok.
+ 	 */
+-	asm volatile("movl %%es,%0" : "=m" (prev->es)); 
++	asm volatile("mov %%es,%0" : "=m" (prev->es)); 
+ 	if (unlikely(next->es | prev->es))
+ 		loadsegment(es, next->es); 
+ 	
+-	asm volatile ("movl %%ds,%0" : "=m" (prev->ds)); 
++	asm volatile ("mov %%ds,%0" : "=m" (prev->ds)); 
+ 	if (unlikely(next->ds | prev->ds))
+ 		loadsegment(ds, next->ds);
+ 
+@@ -437,7 +437,7 @@
+ 	 */
+ 	{ 
+ 		unsigned fsindex;
+-		asm volatile("movl %%fs,%0" : "=g" (fsindex)); 
++		asm volatile("movl %%fs,%0" : "=r" (fsindex)); 
+ 		/* segment register != 0 always requires a reload. 
+ 		   also reload when it has changed. 
+ 		   when prev process used 64bit base always reload
+@@ -458,7 +458,7 @@
+ 	}
+ 	{ 
+ 		unsigned gsindex;
+-		asm volatile("movl %%gs,%0" : "=g" (gsindex)); 
++		asm volatile("movl %%gs,%0" : "=r" (gsindex)); 
+ 		if (unlikely(gsindex | next->gsindex | prev->gs)) {
+ 			load_gs_index(next->gsindex);
+ 			if (gsindex)
+--- linux-2.6.8.1.org/include/asm-i386/system.h	2004-08-14 18:54:46.000000000 +0800
++++ linux-2.6.8.1/include/asm-i386/system.h	2009-06-01 12:04:04.000000000 +0800
+@@ -81,7 +81,7 @@
+ #define loadsegment(seg,value)			\
+ 	asm volatile("\n"			\
+ 		"1:\t"				\
+-		"movl %0,%%" #seg "\n"		\
++		"mov %0,%%" #seg "\n"		\
+ 		"2:\n"				\
+ 		".section .fixup,\"ax\"\n"	\
+ 		"3:\t"				\
+@@ -99,7 +99,7 @@
+  * Save a segment register away
+  */
+ #define savesegment(seg, value) \
+-	asm volatile("movl %%" #seg ",%0":"=m" (*(int *)&(value)))
++	asm volatile("mov %%" #seg ",%0":"=m" (*(int *)&(value)))
+ 
+ /*
+  * Clear and set 'TS' bit respectively

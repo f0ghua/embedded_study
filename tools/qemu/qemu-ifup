@@ -1,0 +1,5 @@
+#!/bin/sh
+inf=$1
+ip3=${inf##tap}
+
+sudo /sbin/ifconfig $1 172.20.${ip3}.1

@@ -1,0 +1,15 @@
+--- ../kernel/linux-3.18.21.org/Makefile	2015-09-01 06:19:23.000000000 +0800
++++ ../kernel/linux-3.18.21/Makefile	2022-06-23 13:22:18.223072642 +0800
+@@ -607,6 +607,12 @@
+ # Defaults to vmlinux, but the arch makefile usually adds further targets
+ all: vmlinux
+ 
++# force no-pie for distro compilers that enable pie by default
++KBUILD_CFLAGS += $(call cc-option, -fno-pie)
++KBUILD_CFLAGS += $(call cc-option, -no-pie)
++KBUILD_AFLAGS += $(call cc-option, -fno-pie)
++KBUILD_CPPFLAGS += $(call cc-option, -fno-pie)
++
+ include $(srctree)/arch/$(SRCARCH)/Makefile
+ 
+ KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)

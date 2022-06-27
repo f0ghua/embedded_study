@@ -1,0 +1,30 @@
+--- arch/x86/kernel/machine_kexec_64.c.org      2021-09-02 18:13:49.821920287 +0800
++++ arch/x86/kernel/machine_kexec_64.c  2021-09-02 18:15:11.319010103 +0800
+@@ -516,6 +516,7 @@
+                                goto overflow;
+                        break;
+                case R_X86_64_PC32:
++               case R_X86_64_PLT32:
+                        value -= (u64)address;
+                        *(u32 *)location = value;
+                        break;
+--- arch/x86/kernel/module.c.org        2021-09-02 18:15:30.283262350 +0800
++++ arch/x86/kernel/module.c    2021-09-02 18:16:16.667877408 +0800
+@@ -180,6 +180,7 @@
+                                goto overflow;
+                        break;
+                case R_X86_64_PC32:
++               case R_X86_64_PLT32:
+                        val -= (u64)loc;
+                        *(u32 *)loc = val;
+ #if 0
+--- arch/x86/tools/relocs.c.org 2021-09-02 18:16:43.312229540 +0800
++++ arch/x86/tools/relocs.c     2021-09-02 18:17:30.220847594 +0800
+@@ -763,6 +763,7 @@
+        switch (r_type) {
+        case R_X86_64_NONE:
+        case R_X86_64_PC32:
++       case R_X86_64_PLT32:
+                /*
+                 * NONE can be ignored and PC relative relocations don't
+                 * need to be adjusted.
