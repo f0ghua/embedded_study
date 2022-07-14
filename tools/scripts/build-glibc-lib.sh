@@ -40,9 +40,12 @@ for ef in ${exec_files};do
                 rlfname=${rl##*/}
                 mkdir -p ${fs_dir}/${rlfdir} && cp -a $rl ${fs_dir}/${rl}
                 echo "cp -a $rl ${fs_dir}/${rl}"
-            fi
-            mkdir -p ${fs_dir}/${fdir} && cp -a $fpath ${fs_dir}/${fpath}
-            echo "cp -a $fpath ${fs_dir}/${fpath}"
+		mkdir -p ${fs_dir}/${fdir} && ln -sf $rl ${fs_dir}/${fpath}
+		echo "ln -sf $rl ${fs_dir}/${fpath}"
+	    else
+                mkdir -p ${fs_dir}/${fdir} && cp -a $fpath ${fs_dir}/${fpath}
+                echo "cp -a $fpath ${fs_dir}/${fpath}"
+	    fi
         #fi
     done
 done
