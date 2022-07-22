@@ -98,6 +98,12 @@ time build.
 
 ** Kernel Compile FAQs
 
+*** HOWTO build kernel with cross compile?
+
+e.g.
+
+make ARCH=x86 CROSS_COMPILE=/home/fog/study/rt/br/buildroot-2015.08.1/output/host/usr/bin/i686-buildroot-linux-gnu-
+
 *** HOWTO support Ctrl-C ?
 
 Patch kernel with following code:

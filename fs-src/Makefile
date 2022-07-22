@@ -9,7 +9,7 @@ endif
 ifndef KERNEL_DIR
 #KERNEL_DIR=$(TOPDIR)/linux-2.6.21
 #KERNEL_DIR=$(TOPDIR)/linux-2.6.16
-KERNEL_DIR=$(TOPDIR)/linux-3.18.21
+KERNEL_DIR=$(TOPDIR)/kernel/linux-3.18.21
 endif
 
 MAKE=make
@@ -20,6 +20,7 @@ export TOPDIR INSTALL_ROOT KERNEL_DIR CC MAKE
 CONFIG_busybox=y
 CONFIG_iproute2=n
 CONFIG_dnrd=n
+CONFIG_kernel_modules=y
 
 SUBDIRS-y = 
 SUBDIRS-n =
@@ -27,6 +28,7 @@ SUBDIRS-n =
 SUBDIRS-$(CONFIG_busybox) += busybox-1.32.1
 SUBDIRS-$(CONFIG_iproute2) += iproute2
 #SUBDIRS-$(CONFIG_dnrd) += dnrd-2.17.2
+SUBDIRS-$(CONFIG_kernel_modules) += kernel_modules
 
 all: $(SUBDIRS-y)
 
@@ -43,7 +45,7 @@ prebuild:
 install:
 	@for i in $(SUBDIRS-y) ; \
 		do echo -e "\033[47;36m 	install $$i \033[0m"; \
-$(MAKE) -C $$i CONFIG_PREFIX=$(INSTALL_ROOT) install || exit 1; \
+		$(MAKE) -C $$i CONFIG_PREFIX=$(INSTALL_ROOT) install || exit 1; \
 	done
 
 clean:
